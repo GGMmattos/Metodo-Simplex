@@ -9,7 +9,7 @@ Problema de programação linear de exemplo
  2x1 - x2  + 2x3 <= 2
  x1, x2, x3 >= 0
 """
-A = np.array([[1, 2, -2,], [2, 0, -2], [2, -1, 2]]) # Matriz dos coeficientes das restrições
+A = np.array([[1, 2, -2], [2, 0, -2], [2, -1, 2]]) # Matriz dos coeficientes das restrições
 b = np.array([4, 6, 2]) # valores de "b", após a igualdade
 c = np.array([1, -2, 1]) # Vetor dos coeficientes da função objetivo, será tratado posteriormente casos de MAX
 
@@ -29,30 +29,31 @@ def simplex(A, b, c):
         B = np.linalg.inv (A[:, vb]) #cálculo da inversa de B -  A[:, vb] contém a matriz dos elementos da base...
 
         #cálculo da solução básica factível
-        sbf = np.dot(A[:, vb], b)
+        sbf = np.dot(B, b)
 
         # Calcular os custos relativos das variáveis não básicas
         Pt = np.dot(c[vb], B)    
         cnb = c[vnb] - np.dot(Pt, A[:, vnb]) # "cnb" cusos da variáveis não base
 
-
         # Verificar se a solução atual é ótima
         # Se todos os custos relativos são maiores ou iguais a zero, a solução é ótima
-        if  np.all(cnb >= 0): #Se todos os custos de cnb forem maior que 0 o laço é encerrado.
+        if np.all(cnb >= 0): #Se todos os custos de cnb forem maior que 0 o laço é encerrado.
             print('Solução ótima encontrada')
             break
-        
+
         # Escolha da variável que entra na base
         # É aquela que tem o menor custo relativo negativo (mais negativo)
         k = np.argmin(cnb) #k é a posição da variável que entra na base no vetor vnb
         #xk = cnb[k] # xk é o índice da variável que entra na baase
 
         #Teste de razão
-        y = np.dot(A[:, vb], A[:, k])
+        y = np.dot(B, A[:, k])
 
         # Calcular os coeficientes da equação da reta que sai da solução atual em direção à melhora da função objetivo¬
-        yA = np.dot(A[:, vb], b) / y
-
+        try:
+            yA = np.dot(B, b) / y
+        except ZeroDivisionError:
+            pass
 
         # Verificar se o problema tem solução limitada
         # Se todos os coeficientes da reta são menores ou iguais a zero, o problema é ilimitado
@@ -69,7 +70,8 @@ def simplex(A, b, c):
         xl = vb[il] # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
 
         # Atualizar a solução básica
-        vb[il] = k # A variável que entra na base ocupa o lugar da que sai
-        vnb[k] = xl # A variável que sai da base ocupa o lugar da que entra
+        vb[il] = k# A variável que entra na base ocupa o lugar da que sai
+        vnb[k] = xl# A variável que sai da base ocupa o lugar da que entra
+
 
 simplex(A, b, c)
