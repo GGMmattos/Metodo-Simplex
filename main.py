@@ -16,15 +16,18 @@ c = np.array([1, -2, 1]) # Vetor dos coeficientes da função objetivo, será tr
 def simplex(A, b, c):
 
     m, n = A.shape #"m" número de restrições, "n" número de variáveis
-    A = np.hstack([A, np.eye(m, dtype=int)])
-    c = np.hstack([c, np.zeros(m)])
+    A = np.hstack([A, np.eye(m, dtype=int)]) #cria matriz identidade das variáveis de folga
+    c = np.hstack([c, np.zeros(m)]) # "c" os custos
 
     var = np.arange(n + m) # var = [0, 1, ..., n + m - 1] -- portanto nao ficara na ordem correta... realizar a correcao posteiormente
 
-    vb = var[n:] # vb = [n, n + 1, ..., n + m - 1]
-    vnb = var[:n] # vnb = [0, 1, ..., n - 1]
+    vb = var[n:] # vb = [n, n + 1, ..., n + m - 1] ('vb' variáveis da base)
+    vnb = var[:n] # vnb = [0, 1, ..., n - 1] ('vnb' variáveis não base)
 
     while True:
+
+        B = np.linalg.inv (A[:, vb]) #cálculo da inversa de B -  A[:, vb] contém a matriz dos elementos da base...
+
         #cálculo da solução básica factível
         sbf = np.dot(A[:, vb], b)
 
@@ -50,7 +53,7 @@ def simplex(A, b, c):
 
 
         # Calcular os coeficientes da equação da reta que sai da solução atual em direção à melhora da função objetivo¬
-        yA = np.dot(A[:, vb], b) / A[:, k]
+        #yA = np.dot(A[:, vb], b) / A[:, k]
 
         # Verificar se o problema tem solução limitada
         # Se todos os coeficientes da reta são menores ou iguais a zero, o problema é ilimitado
@@ -68,9 +71,16 @@ def simplex(A, b, c):
         # Atualizar a solução básica
         vb[il] = k # A variável que entra na base ocupa o lugar da que sai
         vnb[k] = xl # A variável que sai da base ocupa o lugar da que entra
+        # print(vb)
+        # print(vnb)
+        B = np.linalg.inv (A[:, vb])
 
-        print(vb)
-        print(vnb)
+
+
+        # Calculo da solucao básica factível
+        print(A[:, vb])
+        print()
+        print(B)
 
 
 
