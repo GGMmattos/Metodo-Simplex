@@ -17,7 +17,7 @@ def simplex(A, b, c):
 
     m, n = A.shape #"m" número de restrições, "n" número de variáveis
     A = np.hstack([A, np.eye(m, dtype=int)]) #cria matriz identidade das variáveis de folga
-    c = np.hstack([c, np.zeros(m)]) # "c" os custos
+    c = np.hstack([c, np.zeros(m)]) # "c" contém os custos
 
     var = np.arange(n + m) # var = [0, 1, ..., n + m - 1] -- portanto nao ficara na ordem correta... realizar a correcao posteiormente
 
@@ -32,59 +32,44 @@ def simplex(A, b, c):
         sbf = np.dot(A[:, vb], b)
 
         # Calcular os custos relativos das variáveis não básicas
-        cnb = c[vnb] - np.dot(c[vb], A[:, vnb])
+        Pt = np.dot(c[vb], B)    
+        cnb = c[vnb] - np.dot(Pt, A[:, vnb]) # "cnb" cusos da variáveis não base
+
 
         # Verificar se a solução atual é ótima
         # Se todos os custos relativos são maiores ou iguais a zero, a solução é ótima
-        if  np.all(cnb >= 0):
+        if  np.all(cnb >= 0): #Se todos os custos de cnb forem maior que 0 o laço é encerrado.
             print('Solução ótima encontrada')
             break
-
+        
         # Escolha da variável que entra na base
         # É aquela que tem o menor custo relativo negativo (mais negativo)
         k = np.argmin(cnb) #k é a posição da variável que entra na base no vetor vnb
-        xk = cnb[k] # xk é o índice da variável que entra na baase
+        #xk = cnb[k] # xk é o índice da variável que entra na baase
 
         #Teste de razão
         y = np.dot(A[:, vb], A[:, k])
 
-        #print(k) # posicao que entra na base
-        #print(xk) # valor que entra na base
-
-
         # Calcular os coeficientes da equação da reta que sai da solução atual em direção à melhora da função objetivo¬
-        #yA = np.dot(A[:, vb], b) / A[:, k]
+        yA = np.dot(A[:, vb], b) / y
+
 
         # Verificar se o problema tem solução limitada
         # Se todos os coeficientes da reta são menores ou iguais a zero, o problema é ilimitado
-        if np.all(y <= 0):
+        if np.all(yA <= 0):
             print("Problema ilimitado.")
             return None
 
         #Escolha da variável que sai da base
-        y_pos = y[y > 0] # y_pos é o vetor dos coeficientes positivos da reta
+        y_pos = yA[yA > 0] # y_pos é o vetor dos coeficientes positivos da reta -- tratar valores infinitos caso der tempo
         y_min = np.argmin(y_pos) # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
-        il = np.where(y == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor           
+
+        il = np.where(yA == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor           
         xl = vb[il] # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
 
         # Atualizar a solução básica
         vb[il] = k # A variável que entra na base ocupa o lugar da que sai
         vnb[k] = xl # A variável que sai da base ocupa o lugar da que entra
-        # print(vb)
-        # print(vnb)
-        B = np.linalg.inv (A[:, vb])
-
-
-
-        # Calculo da solucao básica factível
-        print(A[:, vb])
-        print()
-        print(B)
-
-
-
-
-        break
 
 simplex(A, b, c)
