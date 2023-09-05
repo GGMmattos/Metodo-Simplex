@@ -19,7 +19,8 @@ def simplex(A, b, c):
     A = np.hstack([A, np.eye(m, dtype=int)])
     c = np.hstack([c, np.zeros(m)])
 
-    var = np.arange(n + m) # var = [0, 1, ..., n + m - 1]
+    var = np.arange(n + m) # var = [0, 1, ..., n + m - 1] -- portanto nao ficara na ordem correta... realizar a correcao posteiormente
+
     vb = var[n:] # vb = [n, n + 1, ..., n + m - 1]
     vnb = var[:n] # vnb = [0, 1, ..., n - 1]
 
@@ -39,12 +40,16 @@ def simplex(A, b, c):
         # Escolha da variável que entra na base
         # É aquela que tem o menor custo relativo negativo (mais negativo)
         k = np.argmin(cnb) #k é a posição da variável que entra na base no vetor vnb
-        #xk = cnb[k] # xk é o índice da variável que entra na base
+        xk = cnb[k] # xk é o índice da variável que entra na baase
 
         #Teste de razão
         y = np.dot(A[:, vb], A[:, k])
-        
-        # Calcular os coeficientes da equação da reta que sai da solução atual em direção à melhora da função objetivo
+
+        #print(k) # posicao que entra na base
+        #print(xk) # valor que entra na base
+
+
+        # Calcular os coeficientes da equação da reta que sai da solução atual em direção à melhora da função objetivo¬
         yA = np.dot(A[:, vb], b) / A[:, k]
 
         # Verificar se o problema tem solução limitada
@@ -57,8 +62,17 @@ def simplex(A, b, c):
         y_pos = y[y > 0] # y_pos é o vetor dos coeficientes positivos da reta
         y_min = np.argmin(y_pos) # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
-        il = np.where(y == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor 
-        xl = vb[il] # xl é o índice da variável que sai da base
+        il = np.where(y == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor           
+        xl = vb[il] # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
+
+        # Atualizar a solução básica
+        vb[il] = k # A variável que entra na base ocupa o lugar da que sai
+        vnb[k] = xl # A variável que sai da base ocupa o lugar da que entra
+
+        print(vb)
+        print(vnb)
+
+
 
 
         break
