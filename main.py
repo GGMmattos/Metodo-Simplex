@@ -73,5 +73,14 @@ def simplex(A, b, c):
         vb[il] = k# A variável que entra na base ocupa o lugar da que sai
         vnb[k] = xl# A variável que sai da base ocupa o lugar da que entra
 
+    # Retornar a solução ótima
+    # A solução ótima é dada pelos valores das variáveis básicas e pelo valor da função objetivo
+    x = np.zeros(n + m) # x é o vetor da solução ótima
+    print(x)
+    x[vb] = sbf # As variáveis básicas recebem os valores dos termos independentes
+    z = c[-1] + np.dot(c[vb], sbf) # z é o valor ótimo da função objetivo
+    return x[:n], z # Retornar apenas as variáveis originais e o valor ótimo
+
 
 simplex(A, b, c)
+
