@@ -38,7 +38,7 @@ def simplex(A, b, c):
         # Verificar se a solução atual é ótima
         # Se todos os custos relativos são maiores ou iguais a zero, a solução é ótima
         if np.all(cnb >= 0): #Se todos os custos de cnb forem maior que 0 o laço é encerrado.
-            print('Solução ótima encontrada')
+            print('Solução ótima encontrada!!!\n')
             break
 
         # Escolha da variável que entra na base
@@ -53,7 +53,7 @@ def simplex(A, b, c):
         try:
             yA = np.dot(B, b) / y
         except ZeroDivisionError:
-            pass
+            print(" ")
 
         # Verificar se o problema tem solução limitada
         # Se todos os coeficientes da reta são menores ou iguais a zero, o problema é ilimitado
@@ -76,11 +76,12 @@ def simplex(A, b, c):
     # Retornar a solução ótima
     # A solução ótima é dada pelos valores das variáveis básicas e pelo valor da função objetivo
     x = np.zeros(n + m) # x é o vetor da solução ótima
-    print(x)
     x[vb] = sbf # As variáveis básicas recebem os valores dos termos independentes
-    z = c[-1] + np.dot(c[vb], sbf) # z é o valor ótimo da função objetivo
-    return x[:n], z # Retornar apenas as variáveis originais e o valor ótimo
+    for i, valor in enumerate(x, start=1):
+        print(f"x{i}={valor}")
 
+    z = c[-1] + np.dot(c[vb], sbf) # z é o valor ótimo da função objetivo
+    print(f"\nValor otimo: {z}")
 
 simplex(A, b, c)
 
