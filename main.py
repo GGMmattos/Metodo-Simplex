@@ -8,10 +8,36 @@ Problema de programação linear de exemplo
  2x1 + 0x2 - 2x3 <= 6
  2x1 - x2  + 2x3 <= 2
  x1, x2, x3 >= 0
+ 
+A) - OK
+A = np.array([[1, 2, 4, -1], [2, 3, -1, 1], [1, 0, 1, 1]]) 
+b = np.array([6, 12, 4]) 
+c = np.array([-2, -1, 3, -5])
+
+B) - OK
+A = np.array([[1, 1, 1, 1], [7, 5, 3, 2], [3, 5, 10, 15]]) 
+b = np.array([15, 120, 100])
+c = np.array([-4, -5, -9, -11]) 
+
+C) - ERROR
+A = np.array([[1, 2, 3], [3, 2, 2], [1, 0, 0]) 
+b = np.array([-8, -6, 18, 15, 2]) 
+c = np.array([2, 8])
+
+D) - OK
+A = np.array([[1, 2, -2], [2, 0, -2], [2, -1, 2]]) 
+b = np.array([4, 6, 2]) 
+c = np.array([1, -2, 1])
+
+E) - OK
+A = np.array([[1, 2, 3], [3, 2, 2]])
+b = np.array([9, 15])
+c = np.array([-1, -9, -1])
 """
-A = np.array([[1, 2, -2], [2, 0, -2], [2, -1, 2]]) # Matriz dos coeficientes das restrições
-b = np.array([4, 6, 2]) # valores de "b", após a igualdade
-c = np.array([1, -2, 1]) # Vetor dos coeficientes da função objetivo, será tratado posteriormente casos de MAX
+
+A = np.array([[1, 2, 3], [3, 2, 2]])
+b = np.array([9, 15])
+c = np.array([-1, -9, -1])
 
 def simplex(A, b, c):
 
@@ -32,7 +58,7 @@ def simplex(A, b, c):
         sbf = np.dot(B, b)
 
         # Calcular os custos relativos das variáveis não básicas
-        Pt = np.dot(c[vb], B)    
+        Pt = np.dot(c[vb], B)
         cnb = c[vnb] - np.dot(Pt, A[:, vnb]) # "cnb" cusos da variáveis não base
 
         # Verificar se a solução atual é ótima
@@ -66,7 +92,7 @@ def simplex(A, b, c):
         y_min = np.argmin(y_pos) # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
 
-        il = np.where(yA == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor           
+        il = np.where(yA == y_pos[y_min])[0][0] # il é a posição da variável que sai da base no vetor
         xl = vb[il] # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
 
         # Atualizar a solução básica
@@ -78,10 +104,9 @@ def simplex(A, b, c):
     x = np.zeros(n + m) # x é o vetor da solução ótima
     x[vb] = sbf # As variáveis básicas recebem os valores dos termos independentes
     for i, valor in enumerate(x, start=1):
-        print(f"x{i}={valor}")
+        print(f"X{i}= %.2f" % valor)
 
     z = c[-1] + np.dot(c[vb], sbf) # z é o valor ótimo da função objetivo
-    print(f"\nValor otimo: {z}")
+    print("\nValor otimo: %.2f" % z)
 
 simplex(A, b, c)
-
