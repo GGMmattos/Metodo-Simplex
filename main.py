@@ -1,12 +1,14 @@
 import os
 import numpy as np
+
 np.seterr(divide='ignore', invalid='ignore')
 
 tipo = ('min', 'max')
 
-A = np.array([[0.5, 0.3], [0.1, 0.2], [0.4, 0.5]]) # A Contém as restrições do problema
-b = np.array([3, 1, 3])
-c = np.array([-3, -2]) # "c" contém os custos da função objetivo
+A = np.array([[0.5, 0.3], [0.1, 0.2], [0.4, 0.5]])  # 'a' Contém as restrições do problema
+b = np.array([3, 1, 3]) # 'b' valores após a desigualdade/igualdade
+c = np.array([-3, -2])  # "c" contém os custos da função objetivo
+
 
 def simplex(A, b, c, problema):
     m, n = A.shape  # "m" número de restricoes, "n" número de veriáveis na F.O
@@ -17,7 +19,7 @@ def simplex(A, b, c, problema):
     vb = var[n:]  # vb = [n, n + 1, ..., n + m - 1] ('vb' variáveis da base)
     vnb = var[:n]  # vnb = [0, 1, ..., n - 1] ('vnb' variáveis não base) --
 
-    while True: #Verifica se o problema é de MAX ou MIN, se MAX multiplica os custos da F.O por -1.
+    while True:  # Verifica se o problema é de MAX ou MIN, se MAX multiplica os custos da F.O por -1.
         if problema.lower() in tipo:
             if problema.lower() == 'max':
                 c = np.dot(c, -1)
@@ -28,8 +30,8 @@ def simplex(A, b, c, problema):
             problema = str(input('Opção incorreta...MAX ou MIN? '))
 
     while True:
-        #Verifica se a matriz é invertível.
-        det = np.linalg.det(A[:, vb]) # Calculando o determinante
+        # Verifica se a matriz é invertível.
+        det = np.linalg.det(A[:, vb])  # Calculando o determinante
 
         if det != 0:
             pass
@@ -67,7 +69,8 @@ def simplex(A, b, c, problema):
 
         # Escolha da variável que sai da base
         y_pos = y[y > 0]  # y_pos é o vetor dos coeficientes positivos
-        y_min = np.argmin(y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
+        y_min = np.argmin(
+            y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
         il = np.where(y == y_pos[y_min])[0][0]  # il é a posição da variável que sai da base no vetor
         xl = vb[il]  # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
@@ -86,6 +89,7 @@ def simplex(A, b, c, problema):
     z = np.dot(c[vb], sbf)  # z é o valor ótimo da função objetivo
     print("\nValor otimo: %.2f" % z)
 
+
 while True:
     print("------------------------------------------")
     print("              Menu Principal              ")
@@ -93,7 +97,7 @@ while True:
     print("1 - \033[34mFazer Simplex\033[m")
     print("0 - \033[34mSair\033[m")
     print("------------------------------------------")
-    
+
     escolha = input("\033[32mEscolha uma opção: \033[m")
 
     if escolha == "1":
