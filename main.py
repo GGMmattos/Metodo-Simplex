@@ -2,30 +2,50 @@ import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 
 tipo = ('min', 'max')
-A = np.array([[1, 2, 3], [3, 2, 2]])
-b = np.array([9, 15])
-c = np.array([-1, -9, -1])
+
+A = np.array([[0.5, 0.3], [0.1, 0.2], [0.4, 0.5]]) # A Contém as restrições do problema
+b = np.array([3, 1, 3])
+c = np.array([-3, -2]) # "c" contém os custos da função objetivo
+
 problema = str(input('O problema é de MAX ou MIN? '))
 
+def simplex(A, b, c, problema):
+    m, n = A.shape  # "m" número de restricoes, "n" número de veriáveis na F.O
 
-def simplex(A, b, c):
-    m, n = A.shape  # "m" número de restrições, "n" número de variáveis
-    A = np.hstack([A, np.eye(m, dtype=int)])  # cria matriz identidade das variáveis de folga
+    A = np.hstack([A, np.eye(m, dtype=int)])  # cria matriz identidade
     c = np.hstack([c, np.zeros(m)])  # "c" contém os custos
-    var = np.arange(n + m)  # var = [0, 1, ..., n + m - 1] -- portanto nao ficara na ordem correta... realizar a correcao posteiormente
+    var = np.arange(n + m)  # var = [0, 1, ..., n + m - 1]
     vb = var[n:]  # vb = [n, n + 1, ..., n + m - 1] ('vb' variáveis da base)
-    vnb = var[:n]  # vnb = [0, 1, ..., n - 1] ('vnb' variáveis não base)
+    vnb = var[:n]  # vnb = [0, 1, ..., n - 1] ('vnb' variáveis não base) --
+
+    while True: #Verifica se o problema é de MAX ou MIN, se MAX multiplica os custos da F.O por -1.
+        if problema.lower() in tipo:
+            if problema.lower() == 'max':
+                c = np.dot(c, -1)
+                break
+            elif problema.lower() == 'min':
+                break
+        else:
+            problema = str(input('Opção incorreta...MAX ou MIN? '))
 
     while True:
+        #Verifica se a matriz é invertível.
+        det = np.linalg.det(A[:, vb]) # Calculando o determinante
+
+        if det != 0:
+            pass
+        else:
+            print("A matriz não é invertível")
+            break
 
         B = np.linalg.inv(A[:, vb])  # cálculo da inversa de B -  A[:, vb] contém a matriz dos elementos da base...
 
         # cálculo da solução básica factível
         sbf = np.dot(B, b)
 
-        # Calcular os custos relativos das variáveis não básicas
+        # Calculo dos custos relativos das variáveis não base.
         Pt = np.dot(c[vb], B)
-        cnb = c[vnb] - np.dot(Pt, A[:, vnb])  # "cnb" cusos da variáveis não base
+        cnb = c[vnb] - np.dot(Pt, A[:, vnb])  # "cnb" custos das variáveis não base.
 
         # Verificar se a solução atual é ótima
         # Se todos os custos relativos são maiores ou iguais a zero, a solução é ótima
@@ -36,28 +56,24 @@ def simplex(A, b, c):
         # Escolha da variável que entra na base
         # É aquela que tem o menor custo relativo negativo (mais negativo)
         k = np.argmin(cnb)  # k é a posição da variável que entra na base no vetor vnb
-        # xk = cnb[k] # xk é o índice da variável que entra na baase
 
-        # Teste de razão
+        # Teste da razão
         y = np.dot(B, A[:, k])
-        yA = np.dot(B, b) / y
+        y = np.dot(B, b) / y
 
         # Verificar se o problema tem solução limitada
-        # Se todos os coeficientes da reta são menores ou iguais a zero, o problema é ilimitado
-        if np.all(yA <= 0):
+        if np.all(y <= 0):
             print("Problema ilimitado.")
             return None
 
         # Escolha da variável que sai da base
-        y_pos = yA[
-            yA > 0]  # y_pos é o vetor dos coeficientes positivos da reta -- tratar valores infinitos caso der tempo
-        y_min = np.argmin(
-            y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
+        y_pos = y[y > 0]  # y_pos é o vetor dos coeficientes positivos
+        y_min = np.argmin(y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
-        il = np.where(yA == y_pos[y_min])[0][0]  # il é a posição da variável que sai da base no vetor
+        il = np.where(y == y_pos[y_min])[0][0]  # il é a posição da variável que sai da base no vetor
         xl = vb[il]  # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
 
-        # Atualizar a solução básica
+        # Atualiza a solução básica
         vb[il] = k  # A variável que entra na base ocupa o lugar da que sai
         vnb[k] = xl  # A variável que sai da base ocupa o lugar da que entra
 
@@ -68,21 +84,7 @@ def simplex(A, b, c):
     for i, valor in enumerate(x, start=1):
         print(f"X{i}= %.2f" % valor)
 
-    z = c[-1] + np.dot(c[vb], sbf)  # z é o valor ótimo da função objetivo
+    z = np.dot(c[vb], sbf)  # z é o valor ótimo da função objetivo
     print("\nValor otimo: %.2f" % z)
 
-
-def verificacao(c, problema):
-    while True:
-        if problema.lower() in tipo:
-            if problema.lower() == 'max':
-                c = np.dot(c, -1)
-                break
-            elif problema.lower() == 'min':
-                break
-        else:
-            problema = str(input('Opção incorreta...MAX ou MIN? '))
-
-
-verificacao(c, problema)
-simplex(A, b, c)
+simplex(A, b, c, problema)
