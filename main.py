@@ -1,3 +1,4 @@
+import os
 import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 
@@ -6,8 +7,6 @@ tipo = ('min', 'max')
 A = np.array([[0.5, 0.3], [0.1, 0.2], [0.4, 0.5]]) # A Contém as restrições do problema
 b = np.array([3, 1, 3])
 c = np.array([-3, -2]) # "c" contém os custos da função objetivo
-
-problema = str(input('O problema é de MAX ou MIN? '))
 
 def simplex(A, b, c, problema):
     m, n = A.shape  # "m" número de restricoes, "n" número de veriáveis na F.O
@@ -87,4 +86,23 @@ def simplex(A, b, c, problema):
     z = np.dot(c[vb], sbf)  # z é o valor ótimo da função objetivo
     print("\nValor otimo: %.2f" % z)
 
-simplex(A, b, c, problema)
+while True:
+    print("------------------------------------------")
+    print("              Menu Principal              ")
+    print("------------------------------------------")
+    print("1 - \033[34mFazer Simplex\033[m")
+    print("0 - \033[34mSair\033[m")
+    print("------------------------------------------")
+    
+    escolha = input("\033[32mEscolha uma opção: \033[m")
+
+    if escolha == "1":
+        problema = str(input('O problema é de MAX ou MIN? '))
+        simplex(A, b, c, problema)
+        input("Aperte enter para continuar...")
+        os.system('cls')
+    elif escolha == "0":
+        print("Saindo do programa. Adeus!")
+        break
+    else:
+        print("\033[31mOpção inválida. Por favor, escolha 1 para fazer o Simplex ou 0 para sair.\033[m")
