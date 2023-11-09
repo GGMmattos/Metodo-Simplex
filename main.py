@@ -69,8 +69,7 @@ def simplex(A, b, c, problema):
 
         # Escolha da variável que sai da base
         y_pos = y[y > 0]  # y_pos é o vetor dos coeficientes positivos
-        y_min = np.argmin(
-            y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
+        y_min = np.argmin(y_pos)  # y_min é a posição da variável que sai da base no vetor y_pos (indice do valor mínimo)
 
         il = np.where(y == y_pos[y_min])[0][0]  # il é a posição da variável que sai da base no vetor
         xl = vb[il]  # xl é o índice da variável que sai da base (vale a pena ressaltar [0...-n])
